@@ -29,8 +29,8 @@ public class DeathRegistrationService {
     @Autowired
     private DeathApplicationEnrichment enrichmentUtil;
 
-//    @Autowired
-//    private UserService userService;
+    @Autowired
+    private UserService userService;
 //
 //    @Autowired
 //    private WorkflowService workflowService;
@@ -41,7 +41,7 @@ public class DeathRegistrationService {
     @Autowired
     private Producer producer;
 
-    public List<DeathRegistrationApplication> registerBtRequest(DeathRegistrationRequest deathRegistrationRequest) {
+    public List<DeathRegistrationApplication> registerDtRequest(DeathRegistrationRequest deathRegistrationRequest) {
         // Validate applications
         validator.validateDeathApplication(deathRegistrationRequest);
 
@@ -49,7 +49,7 @@ public class DeathRegistrationService {
         enrichmentUtil.enrichDeathApplication(deathRegistrationRequest);
 
 //        // Enrich/Upsert user in upon death registration
-//        userService.callUserService(deathRegistrationRequest);
+        userService.callUserService(deathRegistrationRequest);
 //
 //        // Initiate workflow for the new application
 //        workflowService.updateWorkflowStatus(deathRegistrationRequest);
@@ -61,7 +61,7 @@ public class DeathRegistrationService {
         return deathRegistrationRequest.getDeathRegistrationApplications();
     }
 
-    public List<DeathRegistrationApplication> searchBtApplications(RequestInfo requestInfo, DeathApplicationSearchCriteria deathApplicationSearchCriteria) {
+    public List<DeathRegistrationApplication> searchDtApplications(RequestInfo requestInfo, DeathApplicationSearchCriteria deathApplicationSearchCriteria) {
         // Fetch applications from database according to the given search criteria
         List<DeathRegistrationApplication> applications = deathRegistrationRepository.getApplications(deathApplicationSearchCriteria);
 
@@ -79,7 +79,7 @@ public class DeathRegistrationService {
         return applications;
     }
 
-    public DeathRegistrationApplication updateBtApplication(DeathRegistrationRequest deathRegistrationRequest) {
+    public DeathRegistrationApplication updateDtApplication(DeathRegistrationRequest deathRegistrationRequest) {
         // Validate whether the application that is being requested for update indeed exists
 //        DeathRegistrationApplication existingApplication = validator.validateApplicationExistence(deathRegistrationRequest.getDeathRegistrationApplications().get(0));
 //        existingApplication.setWorkflow(deathRegistrationRequest.getDeathRegistrationApplications().get(0).getWorkflow());
