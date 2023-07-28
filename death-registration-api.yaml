@@ -1,0 +1,206 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Death Registration Service.
+  description: |
+    This service provides APIs to register deaths in the system and issue a death certificate.
+  contact:
+    name: eGovernments Foundation
+    email: contacts@egovernments.org
+schemes:
+  - https
+basePath: /death-services
+x-api-id: org.egov.death.services
+x-common-path: https://raw.githubusercontent.com/egovernments/DIGIT-OSS/subhashini_devguide_changes/core-services/docs/common-contract.yml
+paths:
+  /v1/registration/_search:
+    post:
+      summary: Get the list of death registration applications
+      description: 1. Search and get death registration applications(s) based on defined search criteria. 2. In case multiple parameters are passed, death registration applications will be searched on a combination of all the parameters.
+      parameters:
+        - $ref: https://raw.githubusercontent.com/egovernments/DIGIT-OSS/subhashini_devguide_changes/core-services/docs/common-contract.yml#/parameters/requestInfo
+        - $ref: https://raw.githubusercontent.com/egovernments/DIGIT-OSS/subhashini_devguide_changes/core-services/docs/common-contract.yml#/parameters/tenantId
+        - name: status
+          in: query
+          description: Search based on status.
+          type: string
+          allowEmptyValue: true
+        - name: ids
+          type: array
+          items:
+            type: integer
+            format: int64
+          in: query
+          maxItems: 50
+          description: Unique identifier of death registration application
+        - name: applicationNumber
+          in: query
+          description: Unique application number for the Death Registration Application
+          type: string
+          minLength: 2
+          maxLength: 64
+      responses:
+        '200':
+          description: Death registration applications(s) retrieved successfully
+          schema:
+            $ref: '#/definitions/DeathRegistrationRequest'
+        '400':
+          description: Invalid input
+          schema:
+            $ref: https://raw.githubusercontent.com/egovernments/DIGIT-OSS/subhashini_devguide_changes/core-services/docs/common-contract.yml#/definitions/ErrorRes
+      tags:
+        - Death Registration Application
+  /v1/registration/_create:
+    post:
+      summary: Create new death registration application
+      description: |
+        To create new death registration applications in the system. API supports bulk creation with max limit as defined in the Death Registration Request. Please note that either whole batch succeeds or fails, there's no partial batch success. 
+          
+      parameters:
+        - name: DeathRegistrationRequest
+          in: body
+          description: Details for the new Death Registration Application(s) + RequestInfo meta data.
+          required: true
+          schema:
+            $ref: '#/definitions/DeathRegistrationRequest'
+      responses:
+        '201':
+          description: ReponseInfo with Death Registration Application(s) created successfully
+          schema:
+            $ref: '#/definitions/DeathRegistrationResponse'
+        '400':
+          description: Death Registration Application(s) creation failed
+          schema:
+            $ref: https://raw.githubusercontent.com/egovernments/DIGIT-OSS/subhashini_devguide_changes/core-services/docs/common-contract.yml#/definitions/ErrorRes
+      tags:
+        - Death Registration Application
+  /v1/registration/_update:
+    post:
+      summary: update existing Death Registration Applications.
+      description: |
+        To update existing death registration applications in the system. API supports bulk updation with max limit as defined in the birth registration Request. Please note that either whole batch succeeds or fails, there's no partial batch success.
+      parameters:
+        - name: DeathRegistrationRequest
+          in: body
+          description: Details for the new (s) + RequestInfo meta data.
+          required: true
+          schema:
+            $ref: '#/definitions/DeathRegistrationRequest'
+      responses:
+        '201':
+          description: ReponseInfo with Death Registration Application(s) updated sudcessfully
+          schema:
+            $ref: '#/definitions/DeathRegistrationResponse'
+        '400':
+          description: (s) updation failed
+          schema:
+            $ref: https://raw.githubusercontent.com/egovernments/DIGIT-OSS/subhashini_devguide_changes/core-services/docs/common-contract.yml#/definitions/ErrorRes
+      tags:
+        - Death Registration Application
+definitions:
+  Applicant:
+    description: Details of the user applying for death registration
+    allOf:
+      - $ref: https://raw.githubusercontent.com/egovernments/DIGIT-OSS/subhashini_devguide_changes/core-services/docs/common-contract.yml#/definitions/User
+  DeathRegistrationApplication:
+    type: object
+    description: A Object holds the basic data for a Death Registration Application
+    properties:
+      id:
+        type: string
+        minLength: 2
+        maxLength: 64
+        description: Unique Identifier of the death Registration Application (UUID)
+        readOnly: true
+      tenantId:
+        type: string
+        description: Unique Identifier of ULB
+        maxLength: 128
+        minLength: 2
+      applicationNumber:
+        type: string
+        description: Unique application number
+        maxLength: 128
+        minLength: 2
+        readOnly: true
+      deceasedFirstName:
+        type: string
+        description: Deceased first name
+        maxLength: 128
+        minLength: 2
+      deceasedLastName:
+        type: string
+        description: Deceased last name
+        maxLength: 128
+        minLength: 2
+      placeOfDeath:
+        type: string
+        description: Place of death
+        maxLength: 128
+        minLength: 2
+      timeOfDeath:
+        type: integer
+        description: Date of death in epoch time
+      addressOfDeceased:
+        $ref: https://raw.githubusercontent.com/egovernments/DIGIT-OSS/subhashini_devguide_changes/core-services/docs/common-contract.yml#/definitions/Address
+      applicant:
+        $ref: '#/definitions/Applicant'
+      auditDetails:
+        $ref: https://raw.githubusercontent.com/egovernments/DIGIT-OSS/subhashini_devguide_changes/core-services/docs/common-contract.yml#/definitions/AuditDetails
+    required:
+      - tenantId
+      - applicant
+      - deceasedFirstName
+      - addressOfDeceased
+      - timeOfDeath
+      - placeOfDeath
+  Workflow:
+    type: object
+    description: Fields related to workflow service
+    properties:
+      action:
+        type: string
+        description: Action on the application in certain
+        minLength: 1
+        maxLength: 64
+      status:
+        type: string
+        description: status of the application
+      comments:
+        type: string
+        description: Unique Identifier scrutinized number
+        minLength: 1
+        maxLength: 64
+      assignes:
+        type: array
+        description: Roles that can take these actions
+        items:
+          type: string
+      documents:
+        description: Attach the workflow verification documents.
+        type: array
+        items:
+          $ref: https://raw.githubusercontent.com/egovernments/DIGIT-OSS/subhashini_devguide_changes/core-services/docs/common-contract.yml#/definitions/Document
+  DeathRegistrationRequest:
+    description: Contract class to receive request. Array of  items are used in case of create, whereas single  item is used for update
+    properties:
+      RequestInfo:
+        $ref: https://raw.githubusercontent.com/egovernments/DIGIT-OSS/subhashini_devguide_changes/core-services/docs/common-contract.yml#/definitions/RequestInfo
+      DeathRegistrationApplications:
+        description: Used for search result and create only
+        type: array
+        minimum: 1
+        maximum: 100
+        items:
+          $ref: '#/definitions/DeathRegistrationApplication'
+  DeathRegistrationResponse:
+    description: Contract class to send response. Array of  items are used in case of search results or response for create, whereas single  item is used for update
+    properties:
+      ResponseInfo:
+        $ref: https://raw.githubusercontent.com/egovernments/DIGIT-OSS/subhashini_devguide_changes/core-services/docs/common-contract.yml#/definitions/ResponseInfo
+      DeathRegistrationApplications:
+        description: Used for search result and create only
+        type: array
+        maximum: 500
+        items:
+          $ref: '#/definitions/DeathRegistrationApplication'

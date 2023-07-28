@@ -1,0 +1,98 @@
+serviceMaps:
+  serviceName: dtr-services
+  mappings:
+    - version: 1.0
+      description: Persists death details in tables
+      fromTopic: save-dt-application
+      isTransaction: true
+      queryMaps:
+
+        - query: INSERT INTO eg_dt_registration(id,tenantid,registrationnumber,deceasedfirstname,deceasedlastname,placeofdeath,timeofdeath,createdby,lastmodifiedby,createdtime, lastmodifiedtime) VALUES (?,?,?, ?, ?, ?, ?, ?, ?, ?, ?);
+          basePath: DeathRegistrationApplications.*
+          jsonMaps:
+
+            - jsonPath: $.DeathRegistrationApplications.*.id
+
+            - jsonPath: $.DeathRegistrationApplications.*.tenantId
+
+            - jsonPath: $.DeathRegistrationApplications.*.registrationNumber
+
+            - jsonPath: $.DeathRegistrationApplications.*.deceasedFirstName
+
+            - jsonPath: $.DeathRegistrationApplications.*.deceasedLastName
+
+            - jsonPath: $.DeathRegistrationApplications.*.placeOfDeath
+
+            - jsonPath: $.DeathRegistrationApplications.*.timeOfDeath
+
+            - jsonPath: $.DeathRegistrationApplications.*.auditDetails.createdBy
+
+            - jsonPath: $.DeathRegistrationApplications.*.auditDetails.lastModifiedBy
+
+            - jsonPath: $.DeathRegistrationApplications.*.auditDetails.createdTime
+
+            - jsonPath: $.DeathRegistrationApplications.*.auditDetails.lastModifiedTime
+
+        - query: INSERT INTO eg_dt_address(id,tenantid, doorno, latitude, longitude, buildingname, addressid, addressnumber, type, addressline1, addressline2, landmark, street, city, locality, pincode, detail, registrationid, createdby, lastmodifiedby, createdtime, lastmodifiedtime) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+          basePath: DeathRegistrationApplications.*
+          jsonMaps:
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.id
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.tenantId
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.doorNo
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.latitude
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.longitude
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.buildingName
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.addressId
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.addressNumber
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.type
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.addressLine1
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.addressLine2
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.landmark
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.street
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.city
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.locality.name
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.pincode
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.detail
+
+            - jsonPath: $.DeathRegistrationApplications.*.id
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.createdBy
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.lastModifiedBy
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.createdTime
+
+            - jsonPath: $.DeathRegistrationApplications.*.addressOfDeceased.lastModifiedTime
+
+    - version: 1.0
+      description: Update death registration applications in table
+      fromTopic: update-dt-application
+      isTransaction: true
+      queryMaps:
+        - query: UPDATE eg_dt_registration SET tenantid = ?,deceasedFirstName = ?, timeOfDeath = ? WHERE id=?;
+          basePath: DeathRegistrationApplications.*
+          jsonMaps:
+            - jsonPath: $.DeathRegistrationApplications.*.tenantId
+
+            - jsonPath: $.DeathRegistrationApplications.*.deceasedFirstName
+
+            - jsonPath: $.DeathRegistrationApplications.*.timeOfDeath
+
+            - jsonPath: $.DeathRegistrationApplications.*.id
