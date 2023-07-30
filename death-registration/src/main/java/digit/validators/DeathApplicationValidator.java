@@ -22,7 +22,7 @@ public class DeathApplicationValidator {
         });
     }
 
-//    public DeathRegistrationApplication validateApplicationExistence(DeathRegistrationApplication deathRegistrationApplication) {
-////        return repository.getApplications(DeathApplicationSearchCriteria.builder().applicationNumber(deathRegistrationApplication.getApplicationNumber()).build()).get(0);
-//    }
+    public DeathRegistrationApplication validateApplicationExistence(DeathRegistrationApplication deathRegistrationApplication) {
+        return repository.getApplications(DeathApplicationSearchCriteria.builder().applicationNumber(deathRegistrationApplication.getRegistrationNumber()).build()).get(0);
+    }
 }

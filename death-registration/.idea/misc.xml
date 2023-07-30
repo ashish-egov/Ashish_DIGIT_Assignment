@@ -8,6 +8,7 @@
         <option value="$PROJECT_DIR$/../egov-persister/pom.xml" />
         <option value="$PROJECT_DIR$/../egov-idgen/pom.xml" />
         <option value="$PROJECT_DIR$/../egov-mdms-service/pom.xml" />
+        <option value="$PROJECT_DIR$/../egov-workflow-v2/pom.xml" />
       </list>
     </option>
   </component>

@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="egov-workflow-v2" />
         <module name="death-registration" />
         <module name="egov-mdms-service-test" />
         <module name="egov-persister" />
@@ -22,6 +23,7 @@
       <module name="egov-idgen" options="-parameters" />
       <module name="egov-mdms-service-test" options="-parameters" />
       <module name="egov-persister" options="-parameters" />
+      <module name="egov-workflow-v2" options="-parameters" />
     </option>
   </component>
 </project>

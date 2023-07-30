@@ -40,7 +40,7 @@ public class DeathApplicationQueryBuilder {
         }
         if(!ObjectUtils.isEmpty(criteria.getApplicationNumber())){
             addClauseIfRequired(query, preparedStmtList);
-            query.append(" dtr.applicationnumber = ? ");
+            query.append(" dtr.registrationnumber = ? ");
             preparedStmtList.add(criteria.getApplicationNumber());
         }
 

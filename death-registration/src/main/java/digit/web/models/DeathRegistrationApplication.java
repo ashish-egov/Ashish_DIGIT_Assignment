@@ -30,6 +30,10 @@ import lombok.Builder;
 @NoArgsConstructor
 @Builder
 public class DeathRegistrationApplication   {
+        @Valid
+        @JsonProperty("workflow")
+        private Workflow workflow = null;
+
         @JsonProperty("id")
         private String id = null;
 

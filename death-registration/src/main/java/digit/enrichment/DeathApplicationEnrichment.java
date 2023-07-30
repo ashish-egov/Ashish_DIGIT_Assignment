@@ -3,7 +3,9 @@ package digit.enrichment;
 //import digit.service.UserService;
 //import digit.utils.IdgenUtil;
 //import digit.utils.UserUtil;
+import digit.service.UserService;
 import digit.util.IdgenUtil;
+import digit.util.UserUtil;
 import digit.web.models.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +20,11 @@ public class DeathApplicationEnrichment {
     @Autowired
     private IdgenUtil idgenUtil;
 //
-//    @Autowired
-//    private UserService userService;
+    @Autowired
+    private UserService userService;
 //
-//    @Autowired
-//    private UserUtil userUtils;
+    @Autowired
+    private UserUtil userUtils;
 
     public void enrichDeathApplication(DeathRegistrationRequest deathRegistrationRequest) {
         List<String> deathRegistrationIdList = idgenUtil.getIdList(deathRegistrationRequest.getRequestInfo(), deathRegistrationRequest.getDeathRegistrationApplications().get(0).getTenantId(), "dtr.registrationid", "", deathRegistrationRequest.getDeathRegistrationApplications().size());
