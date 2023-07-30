@@ -18,7 +18,7 @@ public class DeathApplicationRowMapper implements ResultSetExtractor<List<DeathR
         Map<String,DeathRegistrationApplication> deathRegistrationApplicationMap = new LinkedHashMap<>();
 
         while (rs.next()){
-            String uuid = rs.getString("bregistrationnumber");
+            String uuid = rs.getString("bapplicationnumber");
             DeathRegistrationApplication deathRegistrationApplication = deathRegistrationApplicationMap.get(uuid);
 
             if(deathRegistrationApplication == null) {
@@ -37,7 +37,7 @@ public class DeathApplicationRowMapper implements ResultSetExtractor<List<DeathR
                         .build();
 
                 deathRegistrationApplication = DeathRegistrationApplication.builder()
-//                        .applicationNumber(rs.getString("bapplicationnumber"))
+                        .applicationNumber(rs.getString("bapplicationnumber"))
                         .tenantId(rs.getString("dtenantid"))
                         .id(rs.getString("bid"))
                         .deceasedFirstName(rs.getString("bdeceasedfirstname"))

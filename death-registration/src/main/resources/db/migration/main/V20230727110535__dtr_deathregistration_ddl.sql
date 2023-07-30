@@ -1,7 +1,7 @@
 CREATE TABLE eg_dt_registration(
   id character varying(64),
   tenantId character varying(64),
-  registrationNumber character varying(64),
+  applicationNumber character varying(64),
   deceasedFirstName character varying(64),
   deceasedLastName character varying(64),
   informantId character varying(64),

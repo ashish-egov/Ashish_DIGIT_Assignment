@@ -1,6 +1,7 @@
 package org.egov.wf.web.controllers;
 
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,11 +18,7 @@ import org.egov.wf.web.models.StatusCountRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -63,14 +60,23 @@ public class WorkflowController {
 
 
 
-        @RequestMapping(value="/process/_search", method = RequestMethod.POST)
-        public ResponseEntity<ProcessInstanceResponse> search(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
-                                                              @Valid @ModelAttribute ProcessInstanceSearchCriteria criteria) {
-        List<ProcessInstance> processInstances = workflowService.search(requestInfoWrapper.getRequestInfo(),criteria);
-        Integer count = workflowService.getUserBasedProcessInstancesCount(requestInfoWrapper.getRequestInfo(),criteria);
-            ProcessInstanceResponse response  = ProcessInstanceResponse.builder().processInstances(processInstances).totalCount(count).build();
-                return new ResponseEntity<>(response,HttpStatus.OK);
-        }
+    @RequestMapping(value = "/process/_search", method = RequestMethod.POST)
+    public ResponseEntity<ProcessInstanceResponse> search(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
+                                                          @RequestParam("applicationNumber") String applicationNumber,
+                                                          @Valid @ModelAttribute ProcessInstanceSearchCriteria criteria) {
+        // Set the businessIds to the applicationNumber value
+        criteria.setBusinessIds(Collections.singletonList(applicationNumber));
+
+        List<ProcessInstance> processInstances = workflowService.search(requestInfoWrapper.getRequestInfo(), criteria);
+        Integer count = workflowService.getUserBasedProcessInstancesCount(requestInfoWrapper.getRequestInfo(), criteria);
+        ProcessInstanceResponse response = ProcessInstanceResponse.builder()
+                .processInstances(processInstances)
+                .totalCount(count)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 
     /**
      * Returns the count of records matching the given criteria

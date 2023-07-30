@@ -5,11 +5,8 @@ import digit.enrichment.DeathApplicationEnrichment;
 import digit.kafka.Producer;
 import digit.repository.DeathRegistrationRepository;
 import digit.validators.DeathApplicationValidator;
-import digit.web.models.DeathApplicationSearchCriteria;
-import digit.web.models.DeathRegistrationApplication;
-import digit.web.models.DeathRegistrationRequest;
+import digit.web.models.*;
 //import digit.web.models.FatherApplicant;
-import digit.web.models.Workflow;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.common.contract.request.RequestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +75,8 @@ public class DeathRegistrationService {
 
         //WORKFLOW INTEGRATION
         applications.forEach(application -> {
-            application.setWorkflow(Workflow.builder().status(workflowService.getCurrentWorkflow(requestInfo, application.getTenantId(), application.getRegistrationNumber()).getState().getState()).build());
+            ProcessInstance obj=workflowService.getCurrentWorkflow(requestInfo, application.getTenantId(), application.getApplicationNumber());
+            application.setWorkflow(Workflow.builder().status(obj.getState().getState()).build());
         });
 
         // Otherwise return the found applications

@@ -31,10 +31,14 @@ public class WorkflowService {
 
     public void updateWorkflowStatus(DeathRegistrationRequest deathRegistrationRequest) {
         deathRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
-            ProcessInstance processInstance = getProcessInstanceForDTR(application, deathRegistrationRequest.getRequestInfo());
-            ProcessInstanceRequest workflowRequest = new ProcessInstanceRequest(deathRegistrationRequest.getRequestInfo(), Collections.singletonList(processInstance));
-            callWorkFlow(workflowRequest);
+            // Check if the workflow object is not null
+            if (application.getWorkflow() != null) {
+                ProcessInstance processInstance = getProcessInstanceForDTR(application, deathRegistrationRequest.getRequestInfo());
+                ProcessInstanceRequest workflowRequest = new ProcessInstanceRequest(deathRegistrationRequest.getRequestInfo(), Collections.singletonList(processInstance));
+                callWorkFlow(workflowRequest);
+            }
         });
+
     }
 
     public State callWorkFlow(ProcessInstanceRequest workflowReq) {
@@ -50,7 +54,7 @@ public class WorkflowService {
         Workflow workflow = application.getWorkflow();
 
         ProcessInstance processInstance = new ProcessInstance();
-        processInstance.setBusinessId(application.getRegistrationNumber());
+        processInstance.setBusinessId(application.getApplicationNumber());
         processInstance.setAction(workflow.getAction());
         processInstance.setModuleName("death-services");
         processInstance.setTenantId(application.getTenantId());
@@ -74,13 +78,14 @@ public class WorkflowService {
 
     }
 
-    public ProcessInstance getCurrentWorkflow(RequestInfo requestInfo, String tenantId, String businessId) {
+    public ProcessInstance getCurrentWorkflow(RequestInfo requestInfo, String tenantId, String applicationNumber) {
 
         RequestInfoWrapper requestInfoWrapper = RequestInfoWrapper.builder().requestInfo(requestInfo).build();
 
-        StringBuilder url = getSearchURLWithParams(tenantId, businessId);
+        StringBuilder url = getSearchURLWithParams(tenantId, applicationNumber);
 
         Object res = repository.fetchResult(url, requestInfoWrapper);
+        System.out.println(res+" rrrrrrrrrrrrrrrrrrrrrrrrr");
         ProcessInstanceResponse response = null;
 
         try{
@@ -90,8 +95,13 @@ public class WorkflowService {
             throw new CustomException("PARSING_ERROR","Failed to parse workflow search response");
         }
 
-        if(response!=null && !CollectionUtils.isEmpty(response.getProcessInstances()) && response.getProcessInstances().get(0)!=null)
+        if(response!=null && response.getProcessInstances()!=null && !CollectionUtils.isEmpty(response.getProcessInstances()) && response.getProcessInstances().get(0)!=null)
+        {
+            System.out.println(response.getProcessInstances().get(0)+" rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
+            System.out.println("rrrrrrrrrrrrrrrrrrrrrrr");
             return response.getProcessInstances().get(0);
+        }
+
 
         return null;
     }
@@ -114,14 +124,14 @@ public class WorkflowService {
         return response.getBusinessServices().get(0);
     }
 
-    private StringBuilder getSearchURLWithParams(String tenantId, String businessService) {
+    private StringBuilder getSearchURLWithParams(String tenantId, String applicationNumber) {
 
         StringBuilder url = new StringBuilder(config.getWfHost());
-        url.append(config.getWfBusinessServiceSearchPath());
+        url.append(config.getWfProcessInstanceSearchPath());
         url.append("?tenantId=");
         url.append(tenantId);
-        url.append("&businessServices=");
-        url.append(businessService);
+        url.append("&applicationNumber=");
+        url.append(applicationNumber);
         return url;
     }
 
@@ -131,7 +141,7 @@ public class WorkflowService {
 
         ProcessInstance process = ProcessInstance.builder()
                 .businessService("DTR")
-                .businessId(application.getRegistrationNumber())
+                .businessId(application.getApplicationNumber())
                 .comment("Payment for death registration processed")
                 .moduleName("death-services")
                 .tenantId(application.getTenantId())

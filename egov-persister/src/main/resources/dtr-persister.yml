@@ -7,7 +7,7 @@ serviceMaps:
       isTransaction: true
       queryMaps:
 
-        - query: INSERT INTO eg_dt_registration(id,tenantid,registrationnumber,deceasedfirstname,deceasedlastname,placeofdeath,timeofdeath,createdby,lastmodifiedby,createdtime, lastmodifiedtime) VALUES (?,?,?, ?, ?, ?, ?, ?, ?, ?, ?);
+        - query: INSERT INTO eg_dt_registration(id,tenantid,applicationnumber,deceasedfirstname,deceasedlastname,placeofdeath,timeofdeath,createdby,lastmodifiedby,createdtime, lastmodifiedtime) VALUES (?,?,?, ?, ?, ?, ?, ?, ?, ?, ?);
           basePath: DeathRegistrationApplications.*
           jsonMaps:
 
@@ -15,7 +15,7 @@ serviceMaps:
 
             - jsonPath: $.DeathRegistrationApplications.*.tenantId
 
-            - jsonPath: $.DeathRegistrationApplications.*.registrationNumber
+            - jsonPath: $.DeathRegistrationApplications.*.applicationNumber
 
             - jsonPath: $.DeathRegistrationApplications.*.deceasedFirstName
 

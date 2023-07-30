@@ -40,8 +40,8 @@ public class DeathRegistrationApplication   {
         @JsonProperty("tenantId")
         private String tenantId = null;
 
-        @JsonProperty("registrationNumber")
-        private String registrationNumber = null;
+        @JsonProperty("applicationNumber")
+        private String applicationNumber = null;
 
         @JsonProperty("deceasedFirstName")
         private String deceasedFirstName = null;
