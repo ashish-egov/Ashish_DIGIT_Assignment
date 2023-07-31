@@ -85,7 +85,6 @@ public class WorkflowService {
         StringBuilder url = getSearchURLWithParams(tenantId, applicationNumber);
 
         Object res = repository.fetchResult(url, requestInfoWrapper);
-        System.out.println(res+" rrrrrrrrrrrrrrrrrrrrrrrrr");
         ProcessInstanceResponse response = null;
 
         try{
@@ -97,8 +96,6 @@ public class WorkflowService {
 
         if(response!=null && response.getProcessInstances()!=null && !CollectionUtils.isEmpty(response.getProcessInstances()) && response.getProcessInstances().get(0)!=null)
         {
-            System.out.println(response.getProcessInstances().get(0)+" rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
-            System.out.println("rrrrrrrrrrrrrrrrrrrrrrr");
             return response.getProcessInstances().get(0);
         }
 
