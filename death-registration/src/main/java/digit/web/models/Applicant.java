@@ -10,6 +10,8 @@ import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -34,6 +36,9 @@ import lombok.Builder;
 public class Applicant   {
         @JsonProperty("id")
         private String id = null;
+
+        @JsonProperty("uuid")
+        private String uuid = null;
 
         @JsonProperty("userName")
         private String userName = null;

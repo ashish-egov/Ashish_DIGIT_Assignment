@@ -42,6 +42,9 @@ public class User   {
         @JsonProperty("userName")
         private String userName = null;
 
+        @JsonProperty("name")
+        private String name = null;
+
         @JsonProperty("userType")
         private String userType = null;
 
@@ -62,6 +65,12 @@ public class User   {
 
         @JsonProperty("mobileNumber")
         private String mobileNumber = null;
+
+        @JsonProperty("altContactNumber")
+        private String altContactNumber=null;
+
+        @JsonProperty("type")
+        private String type = null;
 
         @JsonProperty("emailId")
         private String emailId = null;

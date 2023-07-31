@@ -37,60 +37,37 @@ public class UserService {
      */
     public void callUserService(DeathRegistrationRequest request){
         request.getDeathRegistrationApplications().forEach(application -> {
-//            if(!StringUtils.isEmpty(application.getFather().getId()))
-//                enrichUser(application, request.getRequestInfo());
-//            else {
-//                User user = createFatherUser(application);
-//                application.getFather().setId(upsertUser(user, request.getRequestInfo()));
-//            }
-        });
-
-        request.getDeathRegistrationApplications().forEach(application -> {
-//            if(!StringUtils.isEmpty(application.getMother().getId()))
-//                enrichUser(application, request.getRequestInfo());
-//            else {
-//                User user = createMotherUser(application);
-//                application.getMother().setId(upsertUser(user, request.getRequestInfo()));
-//            }
+            if(application.getApplicant()!=null) {
+                if(!StringUtils.isEmpty(application.getApplicant().getId()))
+                    enrichUser(application, request.getRequestInfo());
+                else {
+                    User user = createUserApplicant(application);
+                    application.getApplicant().setId(upsertUser(user, request.getRequestInfo()));
+                }
+            }
         });
     }
 
-//    private User createFatherUser(DeathRegistrationApplication application){
-//        FatherApplicant father = application.getFather();
-//        User user = User.builder().userName(father.getUserName())
-//                .name(father.getName())
-//                .mobileNumber(father.getMobileNumber())
-//                .emailId(father.getEmailId())
-//                .altContactNumber(father.getAltContactNumber())
-//                .tenantId(father.getTenantId())
-//                .type(father.getType())
-//                .roles(father.getRoles())
-//                .build();
-////        String tenantId = father.getTenantId();
-//        return user;
-//    }
-
-//    private User createMotherUser(DeathRegistrationApplication application){
-//        MotherApplicant mother = application.getMother();
-//        User user = User.builder().userName(mother.getUserName())
-//                .name(mother.getName())
-//                .mobileNumber(mother.getMobileNumber())
-//                .emailId(mother.getEmailId())
-//                .altContactNumber(mother.getAltContactNumber())
-//                .tenantId(mother.getTenantId())
-//                .type(mother.getType())
-//                .roles(mother.getRoles())
-//                .build();
-////        String tenantId = father.getTenantId();
-//        return user;
-//    }
+    private User createUserApplicant(DeathRegistrationApplication application){
+        Applicant applicant = application.getApplicant();
+        User user = User.builder().userName(applicant.getUserName())
+                .name(applicant.getName())
+                .mobileNumber(applicant.getMobileNumber())
+                .emailId(applicant.getEmailId())
+                .altContactNumber(applicant.getAltContactNumber())
+                .tenantId(applicant.getTenantId())
+                .type(applicant.getType())
+                .roles(applicant.getRoles())
+                .build();
+        return user;
+    }
     private String upsertUser(User user, RequestInfo requestInfo){
 
         String tenantId = user.getTenantId();
         User userServiceResponse = null;
 
         // Search on mobile number as user name
-        UserDetailResponse userDetailResponse = searchUser(userUtils.getStateLevelTenant(tenantId),null, user.getMobileNumber());
+        UserDetailResponse userDetailResponse = searchUser(userUtils.getStateLevelTenant(tenantId),null, user.getUserName(),null);
         if (!userDetailResponse.getUser().isEmpty()) {
             User userFromSearch = userDetailResponse.getUser().get(0);
             log.info(userFromSearch.toString());
@@ -110,8 +87,15 @@ public class UserService {
 
 
     private void enrichUser(DeathRegistrationApplication application, RequestInfo requestInfo){
+        String accountIdApplicant = application.getApplicant().getId();
         String tenantId = application.getTenantId();
 
+        UserDetailResponse userDetailResponse = searchUser(userUtils.getStateLevelTenant(tenantId),accountIdApplicant,application.getApplicant().getUserName(),application.getApplicant().getUuid());
+//        UserDetailResponse userDetailResponseMother = searchUser(userUtils.getStateLevelTenant(tenantId),accountIdMother,null);
+        if(userDetailResponse.getUser().isEmpty())
+            throw new CustomException("INVALID_ACCOUNTID","No user exist for the given accountId");
+
+        else application.getApplicant().setId(userDetailResponse.getUser().get(0).getUuid());
 
     }
 
@@ -124,7 +108,7 @@ public class UserService {
      */
     private User createUser(RequestInfo requestInfo,String tenantId, User userInfo) {
 
-        userUtils.addUserDefaultFields(userInfo.getMobileNumber(),tenantId, userInfo);
+        userUtils.addUserDefaultFields(userInfo.getUserName(),tenantId, userInfo);
         StringBuilder uri = new StringBuilder(config.getUserHost())
                 .append(config.getUserContextPath())
                 .append(config.getUserCreateEndpoint());
@@ -167,18 +151,18 @@ public class UserService {
      * @param userName
      * @return
      */
-    public UserDetailResponse searchUser(String stateLevelTenant, String accountId, String userName){
+    public UserDetailResponse searchUser(String stateLevelTenant, String accountId, String userName,String uuid){
 
         UserSearchRequest userSearchRequest =new UserSearchRequest();
         userSearchRequest.setActive(true);
-        userSearchRequest.setUserType("CITIZEN");
+        userSearchRequest.setUserType("EMPLOYEE");
         userSearchRequest.setTenantId(stateLevelTenant);
 
         if(StringUtils.isEmpty(accountId) && StringUtils.isEmpty(userName))
             return null;
 
         if(!StringUtils.isEmpty(accountId))
-            userSearchRequest.setUuid(Collections.singletonList(accountId));
+            userSearchRequest.setUuid(Collections.singletonList(uuid));
 
         if(!StringUtils.isEmpty(userName))
             userSearchRequest.setUserName(userName);
