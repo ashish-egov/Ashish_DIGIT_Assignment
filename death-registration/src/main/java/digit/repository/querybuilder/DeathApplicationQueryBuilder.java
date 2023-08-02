@@ -12,7 +12,7 @@ public class DeathApplicationQueryBuilder {
 
     private static final String BASE_DTR_QUERY = " SELECT dtr.id as bid, dtr.tenantid as dtenantid, dtr.applicationnumber as bapplicationnumber, dtr.deceasedfirstname as bdeceasedfirstname, dtr.deceasedlastname as bdeceasedlastname, dtr.placeofdeath as bplaceofdeath, dtr.timeofdeath as dtimeofdeath, dtr.createdby as bcreatedby, dtr.lastmodifiedby as blastmodifiedby, dtr.createdtime as bcreatedtime, dtr.lastmodifiedtime as blastmodifiedtime, ";
 
-    private static final String ADDRESS_SELECT_QUERY = " add.id as aid, add.tenantid as atenantid, add.doorno as adoorno, add.latitude as alatitude, add.longitude as alongitude, add.buildingname as abuildingname, add.addressid as aaddressid, add.addressnumber as aaddressnumber, add.type as atype, add.addressline1 as aaddressline1, add.addressline2 as aaddressline2, add.landmark as alandmark, add.street as astreet, add.city as acity, add.locality as alocality, add.pincode as apincode, add.detail as adetail, add.registrationid as aregistrationid ";
+    private static final String ADDRESS_SELECT_QUERY = " add.id as aid, add.tenantid as atenantid, add.latitude as alatitude, add.longitude as alongitude, add.addressid as aaddressid, add.addressnumber as aaddressnumber,  add.addressline1 as aaddressline1, add.addressline2 as aaddressline2, add.landmark as alandmark, add.city as acity, add.pincode as apincode, add.detail as adetail, add.registrationid as aregistrationid ";
 
     private static final String FROM_TABLES = " FROM eg_dt_registration dtr LEFT JOIN eg_dt_address add ON dtr.id = add.registrationid ";
 
