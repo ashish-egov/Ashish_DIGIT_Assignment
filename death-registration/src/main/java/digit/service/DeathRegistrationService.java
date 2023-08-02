@@ -59,9 +59,9 @@ public class DeathRegistrationService {
         return deathRegistrationRequest.getDeathRegistrationApplications();
     }
 
-    public List<DeathRegistrationApplication> searchDtApplications(RequestInfo requestInfo, DeathApplicationSearchCriteria deathApplicationSearchCriteria) {
+    public List<DeathRegistrationApplicationSearch> searchDtApplications(RequestInfo requestInfo, DeathApplicationSearchCriteria deathApplicationSearchCriteria) {
         // Fetch applications from database according to the given search criteria
-        List<DeathRegistrationApplication> applications = deathRegistrationRepository.getApplications(deathApplicationSearchCriteria);
+        List<DeathRegistrationApplicationSearch> applications = deathRegistrationRepository.getApplicationsSearch(deathApplicationSearchCriteria);
 
         // If no applications are found matching the given criteria, return an empty list
         if(CollectionUtils.isEmpty(applications))

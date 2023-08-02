@@ -55,10 +55,10 @@ public class V1ApiController{
     }
 
     @RequestMapping(value="/v1/registration/_search", method = RequestMethod.POST)
-    public ResponseEntity<DeathRegistrationResponse> v1RegistrationSearchPost(@RequestBody RequestInfoWrapper requestInfoWrapper, @Valid @ModelAttribute DeathApplicationSearchCriteria deathApplicationSearchCriteria) {
-        List<DeathRegistrationApplication> applications = deathRegistrationService.searchDtApplications(requestInfoWrapper.getRequestInfo(), deathApplicationSearchCriteria);
+    public ResponseEntity<DeathRegistrationResponseSearch> v1RegistrationSearchPost(@RequestBody RequestInfoWrapper requestInfoWrapper, @Valid @ModelAttribute DeathApplicationSearchCriteria deathApplicationSearchCriteria) {
+        List<DeathRegistrationApplicationSearch> applications = deathRegistrationService.searchDtApplications(requestInfoWrapper.getRequestInfo(), deathApplicationSearchCriteria);
         ResponseInfo responseInfo = responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true);
-        DeathRegistrationResponse response = DeathRegistrationResponse.builder().deathRegistrationApplications(applications).responseInfo(responseInfo).build();
+        DeathRegistrationResponseSearch response = DeathRegistrationResponseSearch.builder().deathRegistrationApplications(applications).responseInfo(responseInfo).build();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
