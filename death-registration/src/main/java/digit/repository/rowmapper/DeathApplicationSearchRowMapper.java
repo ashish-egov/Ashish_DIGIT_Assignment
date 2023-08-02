@@ -44,6 +44,8 @@ public class DeathApplicationSearchRowMapper implements ResultSetExtractor<List<
                         .deceasedLastName(rs.getString("bdeceasedlastname"))
                         .placeOfDeath(rs.getString("bplaceofdeath"))
                         .timeOfDeath(rs.getInt("dtimeofdeath"))
+                        .applicantId(rs.getInt("dapplicantid"))
+                        .applicantUuid(rs.getString("dapplicantuuid"))
                         .auditDetails(auditdetails)
                         .build();
             }

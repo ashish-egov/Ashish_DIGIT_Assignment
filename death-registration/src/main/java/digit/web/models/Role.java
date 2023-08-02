@@ -39,9 +39,6 @@ public class Role   {
         @JsonProperty("code")
         private String code = null;
 
-        @JsonProperty("description")
-        private String description = null;
-
 
 }
 

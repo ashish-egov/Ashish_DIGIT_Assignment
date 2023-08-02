@@ -10,7 +10,9 @@ CREATE TABLE eg_dt_registration(
   lastModifiedBy character varying(64),
   createdTime bigint,
   lastModifiedTime bigint,
- CONSTRAINT uk_eg_dt_registration UNIQUE (id)
+  applicantUuid character varying(64),
+  applicantId integer,
+  CONSTRAINT uk_eg_dt_registration UNIQUE (id)
 );
 
 CREATE TABLE eg_dt_address (

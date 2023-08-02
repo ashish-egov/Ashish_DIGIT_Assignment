@@ -1,13 +1,14 @@
 package digit.enrichment;
 
+import digit.service.UserService;
 import digit.util.IdgenUtil;
-import digit.web.models.AuditDetails;
-import digit.web.models.DeathRegistrationApplication;
-import digit.web.models.DeathRegistrationRequest;
+import digit.util.UserUtil;
+import digit.web.models.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 @Component
@@ -17,6 +18,11 @@ public class DeathApplicationEnrichment {
     @Autowired
     private IdgenUtil idgenUtil;
 
+    @Autowired
+    private UserUtil userUtils;
+
+    @Autowired
+    private UserService userService;
 
     public void enrichDeathApplication(DeathRegistrationRequest deathRegistrationRequest) {
         List<String> deathRegistrationIdList = idgenUtil.getIdList(deathRegistrationRequest.getRequestInfo(), deathRegistrationRequest.getDeathRegistrationApplications().get(0).getTenantId(), "dtr.registrationid", "", deathRegistrationRequest.getDeathRegistrationApplications().size());
@@ -46,4 +52,44 @@ public class DeathApplicationEnrichment {
         deathRegistrationRequest.getDeathRegistrationApplications().get(0).getAuditDetails().setLastModifiedTime(System.currentTimeMillis());
         deathRegistrationRequest.getDeathRegistrationApplications().get(0).getAuditDetails().setLastModifiedBy(deathRegistrationRequest.getRequestInfo().getUserInfo().getUuid());
     }
+
+    public void enrichApplicantOnSearch(DeathRegistrationApplicationSearch application, DeathApplicationSearchCriteria deathApplicationSearchCriteria){
+        UserDetailResponse userDetailResponse=userService.searchUser(userUtils.getStateLevelTenant(deathApplicationSearchCriteria.getTenantId()) , application.getApplicantId(), null,application.getApplicantUuid());
+        application.setApplicant(convertUserToApplicant(userDetailResponse.getUser().get(0)));
+    }
+
+    public Applicant convertUserToApplicant(User user) {
+        Applicant applicant = new Applicant();
+        applicant.setId(user.getId());
+        applicant.setUuid(user.getUuid());
+        applicant.setUserName(user.getUserName());
+        applicant.setName(user.getName());
+        applicant.setGender(user.getGender());
+        applicant.setMobileNumber(user.getMobileNumber());
+        applicant.setEmailId(user.getEmailId());
+        applicant.setAltContactNumber(user.getAltContactNumber());
+        applicant.setActive(user.getActive());
+        applicant.setAccountLocked(user.getAccountLocked());
+        applicant.setTenantId(user.getTenantId());
+        applicant.setType(user.getType());
+
+        // Copy roles only if present in User and Applicant classes
+        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+            List<Role> rolesToCopy = new ArrayList<>();
+            for (Role userRole : user.getRoles()) {
+                Role role = new Role();
+                role.setCode(userRole.getCode());
+                role.setName(userRole.getName());
+                role.setTenantId(userRole.getTenantId());
+                rolesToCopy.add(role);
+            }
+            applicant.setRoles(rolesToCopy);
+        }
+
+        // Additional fields in the Applicant class that are not present in the User class
+        // will be ignored (since they are not set).
+
+        return applicant;
+    }
+
 }

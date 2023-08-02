@@ -58,6 +58,15 @@ public class DeathRegistrationApplicationSearch {
     @JsonProperty("addressOfDeceased")
     private Address addressOfDeceased = null;
 
+    @JsonProperty("applicantId")
+    private Integer applicantId = null;
+
+    @JsonProperty("uuid")
+    private String applicantUuid = null;
+
     @JsonProperty("auditDetails")
     private AuditDetails auditDetails = null;
+
+    @JsonProperty("applicant")
+    private Applicant applicant = null;
 }

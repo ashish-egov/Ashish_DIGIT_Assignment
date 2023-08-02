@@ -68,10 +68,10 @@ public class DeathRegistrationService {
             return new ArrayList<>();
 
         // Enrich mother and father of applicant objects
-//        applications.forEach(application -> {
-//            enrichmentUtil.enrichFatherApplicantOnSearch(application);
+        applications.forEach(application -> {
+            enrichmentUtil.enrichApplicantOnSearch(application,deathApplicationSearchCriteria);
 //            enrichmentUtil.enrichMotherApplicantOnSearch(application);
-//        });
+        });
 
         //WORKFLOW INTEGRATION
         applications.forEach(application -> {
