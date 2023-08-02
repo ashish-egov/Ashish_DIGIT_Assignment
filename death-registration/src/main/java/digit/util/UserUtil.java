@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import digit.repository.ServiceRequestRepository;
 import digit.web.models.Role;
 import digit.web.models.User;
-//import digit.models.coremodels.UserDetailResponse;
-import digit.web.models.UserDetailRequest;
 import digit.web.models.UserDetailResponse;
 import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +57,6 @@ public class UserUtil {
             LinkedHashMap responseMap = (LinkedHashMap)serviceRequestRepository.fetchResult(uri, userRequest);
             parseResponse(responseMap,dobFormat);
             UserDetailResponse userDetailResponse = mapper.convertValue(responseMap,UserDetailResponse.class);
-            System.out.println(userDetailResponse);
             return userDetailResponse;
         }
         catch(IllegalArgumentException  e)
@@ -67,24 +64,6 @@ public class UserUtil {
             throw new CustomException("IllegalArgumentException","ObjectMapper not able to convertValue in userCall");
         }
     }
-
-//    public UserDetailRequest userCallCreate(Object userRequest, StringBuilder uri) {
-//        String dobFormat = null;
-//        if(uri.toString().contains(userSearchEndpoint)  || uri.toString().contains(userUpdateEndpoint))
-//            dobFormat="yyyy-MM-dd";
-//        else if(uri.toString().contains(userCreateEndpoint))
-//            dobFormat = "dd/MM/yyyy";
-//        try{
-//            LinkedHashMap responseMap = (LinkedHashMap)serviceRequestRepository.fetchResult(uri, userRequest);
-//            parseResponse(responseMap,dobFormat);
-//            UserDetailRequest userDetailrequest = mapper.convertValue(responseMap, UserDetailRequest.class);
-//            return userDetailrequest;
-//        }
-//        catch(IllegalArgumentException  e)
-//        {
-//            throw new CustomException("IllegalArgumentException","ObjectMapper not able to convertValue in userCall");
-//        }
-//    }
 
 
     /**
