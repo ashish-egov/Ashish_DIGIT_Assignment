@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import java.util.List;
+
 @Component
 public class DeathApplicationValidator {
 
@@ -23,6 +25,15 @@ public class DeathApplicationValidator {
     }
 
     public DeathRegistrationApplication validateApplicationExistence(DeathRegistrationApplication deathRegistrationApplication) {
-        return repository.getApplications(DeathApplicationSearchCriteria.builder().applicationNumber(deathRegistrationApplication.getApplicationNumber()).build()).get(0);
+        try {
+            List<DeathRegistrationApplication> applications = repository.getApplications(DeathApplicationSearchCriteria.builder().applicationNumber(deathRegistrationApplication.getApplicationNumber()).build());
+            if (applications.isEmpty()) {
+                throw new RuntimeException("No such application exists.");
+            }
+            return applications.get(0);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while checking application existence: " + e.getMessage());
+        }
     }
+
 }
