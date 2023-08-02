@@ -56,6 +56,7 @@ public class UserService {
                 .name(applicant.getName())
                 .mobileNumber(applicant.getMobileNumber())
                 .emailId(applicant.getEmailId())
+                .gender(applicant.getGender())
                 .altContactNumber(applicant.getAltContactNumber())
                 .tenantId(applicant.getTenantId())
                 .type(applicant.getType())

@@ -116,6 +116,7 @@ public class UserUtil {
         userInfo.setRoles(Collections.singletonList(role));
         userInfo.setUserType("CITIZEN");
         userInfo.setUserName(mobileNumber);
+        userInfo.setGender(userInfo.getGender());
         userInfo.setTenantId(getStateLevelTenant(tenantId));
         userInfo.setActive(true);
     }

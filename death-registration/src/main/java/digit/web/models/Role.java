@@ -30,9 +30,6 @@ public class Role   {
         @JsonProperty("tenantId")
         private String tenantId = null;
 
-        @JsonProperty("id")
-        private String id = null;
-
         @JsonProperty("name")
         private String name = null;
 
