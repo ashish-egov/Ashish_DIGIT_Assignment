@@ -59,6 +59,7 @@ public class UserUtil {
             LinkedHashMap responseMap = (LinkedHashMap)serviceRequestRepository.fetchResult(uri, userRequest);
             parseResponse(responseMap,dobFormat);
             UserDetailResponse userDetailResponse = mapper.convertValue(responseMap,UserDetailResponse.class);
+            System.out.println(userDetailResponse);
             return userDetailResponse;
         }
         catch(IllegalArgumentException  e)

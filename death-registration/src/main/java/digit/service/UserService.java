@@ -38,11 +38,13 @@ public class UserService {
     public void callUserService(DeathRegistrationRequest request){
         request.getDeathRegistrationApplications().forEach(application -> {
             if(application.getApplicant()!=null) {
-                if(!StringUtils.isEmpty(application.getApplicant().getId()))
+                if(!(application.getApplicant().getId()==null))
                     enrichUser(application, request.getRequestInfo());
                 else {
                     User user = createUserApplicant(application);
-                    application.getApplicant().setId(upsertUser(user, request.getRequestInfo()));
+                    User userWithIdAndUuid=upsertUser(user, request.getRequestInfo());
+                    application.getApplicant().setId(userWithIdAndUuid.getId());
+                    application.getApplicant().setUuid(userWithIdAndUuid.getUuid());
                 }
             }
         });
@@ -61,7 +63,7 @@ public class UserService {
                 .build();
         return user;
     }
-    private String upsertUser(User user, RequestInfo requestInfo){
+    private User upsertUser(User user, RequestInfo requestInfo){
 
         String tenantId = user.getTenantId();
         User userServiceResponse = null;
@@ -81,13 +83,13 @@ public class UserService {
         }
 
         // Enrich the accountId
-        // user.setId(userServiceResponse.getUuid());
-        return userServiceResponse.getUuid();
+         user.setUuid(userServiceResponse.getUuid());
+        return userServiceResponse;
     }
 
 
     private void enrichUser(DeathRegistrationApplication application, RequestInfo requestInfo){
-        String accountIdApplicant = application.getApplicant().getId();
+        Integer accountIdApplicant = application.getApplicant().getId();
         String tenantId = application.getTenantId();
 
         UserDetailResponse userDetailResponse = searchUser(userUtils.getStateLevelTenant(tenantId),accountIdApplicant,application.getApplicant().getUserName(),application.getApplicant().getUuid());
@@ -95,7 +97,7 @@ public class UserService {
         if(userDetailResponse.getUser().isEmpty())
             throw new CustomException("INVALID_ACCOUNTID","No user exist for the given accountId");
 
-        else application.getApplicant().setId(userDetailResponse.getUser().get(0).getUuid());
+        else application.getApplicant().setId(userDetailResponse.getUser().get(0).getId());
 
     }
 
@@ -151,17 +153,17 @@ public class UserService {
      * @param userName
      * @return
      */
-    public UserDetailResponse searchUser(String stateLevelTenant, String accountId, String userName,String uuid){
+    public UserDetailResponse searchUser(String stateLevelTenant, Integer accountId, String userName,String uuid){
 
         UserSearchRequest userSearchRequest =new UserSearchRequest();
         userSearchRequest.setActive(true);
         userSearchRequest.setUserType("EMPLOYEE");
         userSearchRequest.setTenantId(stateLevelTenant);
 
-        if(StringUtils.isEmpty(accountId) && StringUtils.isEmpty(userName))
+        if(accountId==null && StringUtils.isEmpty(userName))
             return null;
 
-        if(!StringUtils.isEmpty(accountId))
+        if(!(accountId==null))
             userSearchRequest.setUuid(Collections.singletonList(uuid));
 
         if(!StringUtils.isEmpty(userName))

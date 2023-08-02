@@ -35,7 +35,7 @@ import lombok.Builder;
 @Builder
 public class Applicant   {
         @JsonProperty("id")
-        private String id = null;
+        private Integer id = null;
 
         @JsonProperty("uuid")
         private String uuid = null;

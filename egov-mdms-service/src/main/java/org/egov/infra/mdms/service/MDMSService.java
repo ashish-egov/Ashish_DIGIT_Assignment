@@ -36,6 +36,7 @@ public class MDMSService {
             if (ulbLevel == null)
                 throw new CustomException("Invalid_tenantId.MdmsCriteria.tenantId", "Invalid Tenant Id");
         } else {
+
             stateLevel = tenantIdMap.get(tenantId);
             if (stateLevel == null)
                 throw new CustomException("Invalid_tenantId.MdmsCriteria.tenantId", "Invalid Tenant Id");
