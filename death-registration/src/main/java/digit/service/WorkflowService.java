@@ -103,24 +103,6 @@ public class WorkflowService {
         return null;
     }
 
-    private BusinessService getBusinessService(DeathRegistrationApplication application, RequestInfo requestInfo) {
-        String tenantId = application.getTenantId();
-        StringBuilder url = getSearchURLWithParams(tenantId, "DTR");
-        RequestInfoWrapper requestInfoWrapper = RequestInfoWrapper.builder().requestInfo(requestInfo).build();
-        Object result = repository.fetchResult(url, requestInfoWrapper);
-        BusinessServiceResponse response = null;
-        try {
-            response = mapper.convertValue(result, BusinessServiceResponse.class);
-        } catch (IllegalArgumentException e) {
-            throw new CustomException("PARSING ERROR", "Failed to parse response of workflow business service search");
-        }
-
-        if (CollectionUtils.isEmpty(response.getBusinessServices()))
-            throw new CustomException("BUSINESSSERVICE_NOT_FOUND", "The businessService " + "DTR" + " is not found");
-
-        return response.getBusinessServices().get(0);
-    }
-
     private StringBuilder getSearchURLWithParams(String tenantId, String applicationNumber) {
 
         StringBuilder url = new StringBuilder(config.getWfHost());
@@ -132,23 +114,4 @@ public class WorkflowService {
         return url;
     }
 
-    public ProcessInstanceRequest getProcessInstanceForDeathRegistrationPayment(DeathRegistrationRequest updateRequest) {
-
-        DeathRegistrationApplication application = updateRequest.getDeathRegistrationApplications().get(0);
-
-        ProcessInstance process = ProcessInstance.builder()
-                .businessService("DTR")
-                .businessId(application.getApplicationNumber())
-                .comment("Payment for death registration processed")
-                .moduleName("death-services")
-                .tenantId(application.getTenantId())
-                .action("PAY")
-                .build();
-
-        return ProcessInstanceRequest.builder()
-                .requestInfo(updateRequest.getRequestInfo())
-                .processInstances(Arrays.asList(process))
-                .build();
-
-    }
 }
