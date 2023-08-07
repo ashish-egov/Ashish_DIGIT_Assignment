@@ -72,12 +72,14 @@ serviceMaps:
       fromTopic: update-dt-application
       isTransaction: true
       queryMaps:
-        - query: UPDATE eg_dt_registration SET tenantid = ?,deceasedFirstName = ?, timeOfDeath = ?,lastModifiedBy=?,lastModifiedTime =? WHERE id=?;
+        - query: UPDATE eg_dt_registration SET tenantid = ?,deceasedFirstName = ?,deceasedLastName=?, timeOfDeath = ?,lastModifiedBy=?,lastModifiedTime =? WHERE id=?;
           basePath: DeathRegistrationApplications.*
           jsonMaps:
             - jsonPath: $.DeathRegistrationApplications.*.tenantId
 
             - jsonPath: $.DeathRegistrationApplications.*.deceasedFirstName
+
+            - jsonPath: $.DeathRegistrationApplications.*.deceasedLastName
 
             - jsonPath: $.DeathRegistrationApplications.*.timeOfDeath
 
