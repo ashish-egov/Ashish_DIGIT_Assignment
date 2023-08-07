@@ -54,7 +54,7 @@ public class DeathApplicationEnrichment {
     }
 
     public void enrichApplicantOnSearch(DeathRegistrationApplicationSearch application, DeathApplicationSearchCriteria deathApplicationSearchCriteria){
-        UserDetailResponse userDetailResponse=userService.searchUser(userUtils.getStateLevelTenant(deathApplicationSearchCriteria.getTenantId()) , application.getApplicantId(), null,application.getApplicantUuid());
+        UserDetailResponse userDetailResponse=userService.searchUser(userUtils.getStateLevelTenant(deathApplicationSearchCriteria.getTenantId()) , application.getApplicantId(), null,application.getApplicantUuid(),application.getApplicantType());
         application.setApplicant(convertUserToApplicant(userDetailResponse.getUser().get(0)));
     }
 

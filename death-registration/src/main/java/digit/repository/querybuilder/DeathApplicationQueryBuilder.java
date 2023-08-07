@@ -10,7 +10,7 @@ import java.util.List;
 @Component
 public class DeathApplicationQueryBuilder {
 
-    private static final String BASE_DTR_QUERY = " SELECT dtr.id as bid, dtr.tenantid as dtenantid, dtr.applicationnumber as bapplicationnumber, dtr.deceasedfirstname as bdeceasedfirstname, dtr.deceasedlastname as bdeceasedlastname, dtr.placeofdeath as bplaceofdeath, dtr.timeofdeath as dtimeofdeath,dtr.applicantid as dapplicantid,dtr.applicantuuid as dapplicantuuid, dtr.createdby as bcreatedby, dtr.lastmodifiedby as blastmodifiedby, dtr.createdtime as bcreatedtime, dtr.lastmodifiedtime as blastmodifiedtime, ";
+    private static final String BASE_DTR_QUERY = " SELECT dtr.id as bid, dtr.tenantid as dtenantid, dtr.applicationnumber as bapplicationnumber, dtr.deceasedfirstname as bdeceasedfirstname, dtr.deceasedlastname as bdeceasedlastname, dtr.placeofdeath as bplaceofdeath, dtr.timeofdeath as dtimeofdeath,dtr.applicantid as dapplicantid,dtr.applicantuuid as dapplicantuuid,dtr.applicanttype as dapplicanttype, dtr.createdby as bcreatedby, dtr.lastmodifiedby as blastmodifiedby, dtr.createdtime as bcreatedtime, dtr.lastmodifiedtime as blastmodifiedtime, ";
 
     private static final String ADDRESS_SELECT_QUERY = " add.id as aid, add.tenantid as atenantid, add.latitude as alatitude, add.longitude as alongitude, add.addressid as aaddressid, add.addressnumber as aaddressnumber,  add.addressline1 as aaddressline1, add.addressline2 as aaddressline2, add.landmark as alandmark, add.city as acity, add.pincode as apincode, add.detail as adetail, add.registrationid as aregistrationid ";
 

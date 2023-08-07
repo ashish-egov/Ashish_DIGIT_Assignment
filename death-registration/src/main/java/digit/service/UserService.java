@@ -70,7 +70,7 @@ public class UserService {
         User userServiceResponse = null;
 
         // Search on mobile number as user name
-        UserDetailResponse userDetailResponse = searchUser(userUtils.getStateLevelTenant(tenantId),null, user.getUserName(),null);
+        UserDetailResponse userDetailResponse = searchUser(userUtils.getStateLevelTenant(tenantId),null, user.getUserName(),null,user.getType());
         if (!userDetailResponse.getUser().isEmpty()) {
             User userFromSearch = userDetailResponse.getUser().get(0);
             log.info(userFromSearch.toString());
@@ -93,7 +93,7 @@ public class UserService {
         Integer accountIdApplicant = application.getApplicant().getId();
         String tenantId = application.getTenantId();
 
-        UserDetailResponse userDetailResponse = searchUser(userUtils.getStateLevelTenant(tenantId),accountIdApplicant,application.getApplicant().getUserName(),application.getApplicant().getUuid());
+        UserDetailResponse userDetailResponse = searchUser(userUtils.getStateLevelTenant(tenantId),accountIdApplicant,application.getApplicant().getUserName(),application.getApplicant().getUuid(),application.getApplicant().getType());
 //        UserDetailResponse userDetailResponseMother = searchUser(userUtils.getStateLevelTenant(tenantId),accountIdMother,null);
         if(userDetailResponse.getUser().isEmpty())
             throw new CustomException("INVALID_ACCOUNTID","No user exist for the given accountId");
@@ -154,11 +154,11 @@ public class UserService {
      * @param userName
      * @return
      */
-    public UserDetailResponse searchUser(String stateLevelTenant, Integer accountId, String userName,String uuid){
+    public UserDetailResponse searchUser(String stateLevelTenant, Integer accountId, String userName,String uuid,String type){
 
         UserSearchRequest userSearchRequest =new UserSearchRequest();
         userSearchRequest.setActive(true);
-        userSearchRequest.setUserType("EMPLOYEE");
+        userSearchRequest.setUserType(type);
         userSearchRequest.setTenantId(stateLevelTenant);
 
         if(accountId==null && StringUtils.isEmpty(userName))

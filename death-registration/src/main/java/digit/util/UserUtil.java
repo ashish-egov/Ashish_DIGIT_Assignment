@@ -112,9 +112,9 @@ public class UserUtil {
      * @param userInfo
      */
     public void addUserDefaultFields(String mobileNumber,String tenantId, User userInfo){
-        Role role = getCitizenRole(tenantId);
-        userInfo.setRoles(Collections.singletonList(role));
-        userInfo.setUserType("CITIZEN");
+        List<Role> roles=userInfo.getRoles();
+        userInfo.setRoles(roles);
+        userInfo.setUserType(userInfo.getType());
         userInfo.setUserName(mobileNumber);
         userInfo.setGender(userInfo.getGender());
         userInfo.setTenantId(getStateLevelTenant(tenantId));
@@ -126,13 +126,6 @@ public class UserUtil {
      * @param tenantId
      * @return
      */
-    private Role getCitizenRole(String tenantId){
-        Role role = new Role();
-        role.setCode("CITIZEN");
-        role.setName("Citizen");
-        role.setTenantId(getStateLevelTenant(tenantId));
-        return role;
-    }
 
     public String getStateLevelTenant(String tenantId){
         return tenantId.split("\\.")[0];

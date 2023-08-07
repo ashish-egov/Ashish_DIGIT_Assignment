@@ -61,6 +61,9 @@ public class DeathRegistrationApplicationSearch {
     @JsonProperty("applicantId")
     private Integer applicantId = null;
 
+    @JsonProperty("applicantType")
+    private String applicantType = null;
+
     @JsonProperty("uuid")
     private String applicantUuid = null;
 
