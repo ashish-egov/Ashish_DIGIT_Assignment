@@ -52,6 +52,11 @@ public class DeathRegistrationService {
         // Initiate workflow for the new application
         workflowService.updateWorkflowStatus(deathRegistrationRequest);
 
+        deathRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
+            ProcessInstance obj=workflowService.getCurrentWorkflow(deathRegistrationRequest.getRequestInfo(), application.getTenantId(), application.getApplicationNumber());
+            application.setWorkflow(Workflow.builder().status(obj.getState().getState()).build());
+        });
+
         // Push the application to the topic for persister to listen and persist
         producer.push("save-dt-application", deathRegistrationRequest);
 
@@ -91,6 +96,11 @@ public class DeathRegistrationService {
         enrichmentUtil.enrichDeathApplicationUponUpdate(deathRegistrationRequest);
 
         workflowService.updateWorkflowStatus(deathRegistrationRequest);
+
+        deathRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
+            ProcessInstance obj=workflowService.getCurrentWorkflow(deathRegistrationRequest.getRequestInfo(), application.getTenantId(), application.getApplicationNumber());
+            application.setWorkflow(Workflow.builder().status(obj.getState().getState()).build());
+        });
 
         // Just like create request, update request will be handled asynchronously by the persister
         producer.push("update-dt-application", deathRegistrationRequest);
