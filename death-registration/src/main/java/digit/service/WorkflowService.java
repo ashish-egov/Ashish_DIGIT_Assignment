@@ -29,13 +29,32 @@ public class WorkflowService {
     @Autowired
     private DTRConfiguration config;
 
+    @Autowired
+    private WorkflowService workflowService;
+
     public void updateWorkflowStatus(DeathRegistrationRequest deathRegistrationRequest) {
         deathRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
             // Check if the workflow object is not null
             if (application.getWorkflow() != null) {
                 ProcessInstance processInstance = getProcessInstanceForDTR(application, deathRegistrationRequest.getRequestInfo());
                 ProcessInstanceRequest workflowRequest = new ProcessInstanceRequest(deathRegistrationRequest.getRequestInfo(), Collections.singletonList(processInstance));
-                callWorkFlow(workflowRequest);
+                application.getWorkflow().setStatus(callWorkFlow(workflowRequest).getState());
+            }
+            else{
+                    ProcessInstance obj=workflowService.getCurrentWorkflow(deathRegistrationRequest.getRequestInfo(), application.getTenantId(), application.getApplicationNumber());
+                    application.setWorkflow(Workflow.builder().status(obj.getState().getState()).build());
+                    application.getWorkflow().setComments(obj.getComment());
+                    application.getWorkflow().setAction(obj.getAction());
+                    application.getWorkflow().setDocuments(obj.getDocuments());
+                    List<User> assignees = obj.getAssignes();
+                    List<String> uuidStrings = new ArrayList<>();
+
+                    if (assignees != null && !assignees.isEmpty()) {
+                        for (User user : assignees) {
+                            uuidStrings.add(user.getUuid());
+                        }
+                    }
+                    application.getWorkflow().setAssignes(uuidStrings);
             }
         });
 

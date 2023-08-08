@@ -65,7 +65,6 @@ public class V1ApiController{
     @RequestMapping(value="/v1/registration/_update", method = RequestMethod.POST)
     public ResponseEntity<DeathRegistrationResponse> v1RegistrationUpdatePost(@ApiParam(value = "Details for the new (s) + RequestInfo meta data." ,required=true )  @Valid @RequestBody DeathRegistrationRequest deathRegistrationRequest) {
         DeathRegistrationApplication application = deathRegistrationService.updateDtApplication(deathRegistrationRequest);
-
         ResponseInfo responseInfo = responseInfoFactory.createResponseInfoFromRequestInfo(deathRegistrationRequest.getRequestInfo(), true);
         DeathRegistrationResponse response = DeathRegistrationResponse.builder().deathRegistrationApplications(Collections.singletonList(application)).responseInfo(responseInfo).build();
         return new ResponseEntity<>(response, HttpStatus.OK);

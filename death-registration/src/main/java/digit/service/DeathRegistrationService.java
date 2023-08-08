@@ -53,18 +53,6 @@ public class DeathRegistrationService {
         // Initiate workflow for the new application
         workflowService.updateWorkflowStatus(deathRegistrationRequest);
 
-        try {
-            Thread.sleep(TimeUnit.SECONDS.toMillis(1)); // Adding a 1-second delay
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-
-        deathRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
-            ProcessInstance obj=workflowService.getCurrentWorkflow(deathRegistrationRequest.getRequestInfo(), application.getTenantId(), application.getApplicationNumber());
-            application.setWorkflow(Workflow.builder().status(obj.getState().getState()).build());
-        });
-
         // Push the application to the topic for persister to listen and persist
         producer.push("save-dt-application", deathRegistrationRequest);
 
@@ -83,18 +71,24 @@ public class DeathRegistrationService {
         // Enrich mother and father of applicant objects
         applications.forEach(application -> {
             enrichmentUtil.enrichApplicantOnSearch(application,deathApplicationSearchCriteria);
-//            enrichmentUtil.enrichMotherApplicantOnSearch(application);
         });
 
-        try {
-            Thread.sleep(TimeUnit.SECONDS.toMillis(1)); // Adding a 1-second delay
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
         //WORKFLOW INTEGRATION
         applications.forEach(application -> {
             ProcessInstance obj=workflowService.getCurrentWorkflow(requestInfo, application.getTenantId(), application.getApplicationNumber());
             application.setWorkflow(Workflow.builder().status(obj.getState().getState()).build());
+            application.getWorkflow().setComments(obj.getComment());
+            application.getWorkflow().setAction(obj.getAction());
+            application.getWorkflow().setDocuments(obj.getDocuments());
+            List<User> assignees = obj.getAssignes();
+            List<String> uuidStrings = new ArrayList<>();
+
+            if (assignees != null && !assignees.isEmpty()) {
+                for (User user : assignees) {
+                    uuidStrings.add(user.getUuid());
+                }
+            }
+            application.getWorkflow().setAssignes(uuidStrings);
         });
 
         // Otherwise return the found applications
@@ -109,17 +103,6 @@ public class DeathRegistrationService {
         enrichmentUtil.enrichDeathApplicationUponUpdate(deathRegistrationRequest);
 
         workflowService.updateWorkflowStatus(deathRegistrationRequest);
-
-        try {
-            Thread.sleep(TimeUnit.SECONDS.toMillis(1)); // Adding a 1-second delay
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        deathRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
-            ProcessInstance obj=workflowService.getCurrentWorkflow(deathRegistrationRequest.getRequestInfo(), application.getTenantId(), application.getApplicationNumber());
-            application.setWorkflow(Workflow.builder().status(obj.getState().getState()).build());
-        });
 
         // Just like create request, update request will be handled asynchronously by the persister
         producer.push("update-dt-application", deathRegistrationRequest);
