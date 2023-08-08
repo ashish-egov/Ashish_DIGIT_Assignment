@@ -16,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -52,6 +53,13 @@ public class DeathRegistrationService {
         // Initiate workflow for the new application
         workflowService.updateWorkflowStatus(deathRegistrationRequest);
 
+        try {
+            Thread.sleep(TimeUnit.SECONDS.toMillis(1)); // Adding a 1-second delay
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+
         deathRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
             ProcessInstance obj=workflowService.getCurrentWorkflow(deathRegistrationRequest.getRequestInfo(), application.getTenantId(), application.getApplicationNumber());
             application.setWorkflow(Workflow.builder().status(obj.getState().getState()).build());
@@ -78,6 +86,11 @@ public class DeathRegistrationService {
 //            enrichmentUtil.enrichMotherApplicantOnSearch(application);
         });
 
+        try {
+            Thread.sleep(TimeUnit.SECONDS.toMillis(1)); // Adding a 1-second delay
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         //WORKFLOW INTEGRATION
         applications.forEach(application -> {
             ProcessInstance obj=workflowService.getCurrentWorkflow(requestInfo, application.getTenantId(), application.getApplicationNumber());
@@ -96,6 +109,12 @@ public class DeathRegistrationService {
         enrichmentUtil.enrichDeathApplicationUponUpdate(deathRegistrationRequest);
 
         workflowService.updateWorkflowStatus(deathRegistrationRequest);
+
+        try {
+            Thread.sleep(TimeUnit.SECONDS.toMillis(1)); // Adding a 1-second delay
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
         deathRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
             ProcessInstance obj=workflowService.getCurrentWorkflow(deathRegistrationRequest.getRequestInfo(), application.getTenantId(), application.getApplicationNumber());
