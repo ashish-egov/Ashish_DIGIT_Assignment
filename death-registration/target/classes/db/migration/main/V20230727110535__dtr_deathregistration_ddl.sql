@@ -6,13 +6,14 @@ CREATE TABLE eg_dt_registration(
   deceasedLastName character varying(64),
   placeOfDeath character varying(64),
   timeOfDeath bigint,
+  applicantId integer,
+  applicantUuid character varying(64),
+  applicantType character varying(64),
+  applicationStatus character varying(64),
   createdBy character varying(64),
   lastModifiedBy character varying(64),
   createdTime bigint,
   lastModifiedTime bigint,
-  applicantUuid character varying(64),
-  applicantId integer,
-  applicantType character varying(64),
   CONSTRAINT uk_eg_dt_registration UNIQUE (id)
 );
 
