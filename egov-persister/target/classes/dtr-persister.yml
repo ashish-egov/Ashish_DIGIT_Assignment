@@ -7,7 +7,7 @@ serviceMaps:
       isTransaction: true
       queryMaps:
 
-        - query: INSERT INTO eg_dt_registration(id,tenantid,applicationnumber,deceasedfirstname,deceasedlastname,placeofdeath,timeofdeath,applicantuuid,applicantid,applicanttype,createdby,lastmodifiedby,createdtime, lastmodifiedtime,applicationstatus) VALUES (?,?,?, ?, ?,?, ?, ?, ?, ?, ?, ?,?,?,?);
+        - query: INSERT INTO eg_dt_registration(id,tenantid,applicationnumber,deceasedfirstname,deceasedlastname,placeofdeath,timeofdeath,applicantuuid,applicantid,applicanttype,createdby,lastmodifiedby,createdtime, lastmodifiedtime,applicationstatus,workflowstatus) VALUES (?,?,?, ?, ?,?, ?, ?, ?, ?, ?, ?,?,?,?,?);
           basePath: DeathRegistrationApplications.*
           jsonMaps:
 
@@ -40,6 +40,8 @@ serviceMaps:
             - jsonPath: $.DeathRegistrationApplications.*.auditDetails.lastModifiedTime
 
             - jsonPath: $.DeathRegistrationApplications.*.workflow.status
+
+            - jsonPath: $.DeathRegistrationApplications.*.workflow.workflowStatus
 
         - query: INSERT INTO eg_dt_address(id,tenantid, latitude, longitude, addressid, addressnumber, addressline1, addressline2, landmark,city, pincode, detail, registrationid) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
           basePath: DeathRegistrationApplications.*
@@ -76,7 +78,7 @@ serviceMaps:
       fromTopic: update-dt-application
       isTransaction: true
       queryMaps:
-        - query: UPDATE eg_dt_registration SET tenantid = ?,deceasedFirstName = ?,deceasedLastName=?, timeOfDeath = ?,lastModifiedBy=?,lastModifiedTime =?,applicationStatus=? WHERE id=?;
+        - query: UPDATE eg_dt_registration SET tenantid = ?,deceasedFirstName = ?,deceasedLastName=?, timeOfDeath = ?,lastModifiedBy=?,lastModifiedTime =?,applicationStatus=?,workflowStatus=? WHERE id=?;
           basePath: DeathRegistrationApplications.*
           jsonMaps:
             - jsonPath: $.DeathRegistrationApplications.*.tenantId
@@ -92,5 +94,7 @@ serviceMaps:
             - jsonPath: $.DeathRegistrationApplications.*.auditDetails.lastModifiedTime
 
             - jsonPath: $.DeathRegistrationApplications.*.workflow.status
+
+            - jsonPath: $.DeathRegistrationApplications.*.workflow.workflowStatus
 
             - jsonPath: $.DeathRegistrationApplications.*.id
