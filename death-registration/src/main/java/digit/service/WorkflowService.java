@@ -34,31 +34,41 @@ public class WorkflowService {
 
     public void updateWorkflowStatus(DeathRegistrationRequest deathRegistrationRequest) {
         deathRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
-            // Check if the workflow object is not null
             if (application.getWorkflow() != null) {
                 ProcessInstance processInstance = getProcessInstanceForDTR(application, deathRegistrationRequest.getRequestInfo());
                 ProcessInstanceRequest workflowRequest = new ProcessInstanceRequest(deathRegistrationRequest.getRequestInfo(), Collections.singletonList(processInstance));
-                application.getWorkflow().setStatus(callWorkFlow(workflowRequest).getState());
-            }
-            else{
-                    ProcessInstance obj=workflowService.getCurrentWorkflow(deathRegistrationRequest.getRequestInfo(), application.getTenantId(), application.getApplicationNumber());
-                    application.setWorkflow(Workflow.builder().status(obj.getState().getState()).build());
-                    application.getWorkflow().setComments(obj.getComment());
-                    application.getWorkflow().setAction(obj.getAction());
-                    application.getWorkflow().setDocuments(obj.getDocuments());
-                    List<User> assignees = obj.getAssignes();
-                    List<String> uuidStrings = new ArrayList<>();
-
-                    if (assignees != null && !assignees.isEmpty()) {
-                        for (User user : assignees) {
-                            uuidStrings.add(user.getUuid());
-                        }
+                application.getWorkflow().setWorkflowStatus(callWorkFlow(workflowRequest).getState());
+                updateStatusBasedOnWorkflowStatus(application.getWorkflow());
+            } else {
+                ProcessInstance obj = workflowService.getCurrentWorkflow(deathRegistrationRequest.getRequestInfo(), application.getTenantId(), application.getApplicationNumber());
+                application.setWorkflow(Workflow.builder().workflowStatus(obj.getState().getState()).build());
+                application.getWorkflow().setComments(obj.getComment());
+                application.getWorkflow().setAction(obj.getAction());
+                application.getWorkflow().setDocuments(obj.getDocuments());
+                updateStatusBasedOnWorkflowStatus(application.getWorkflow());
+                List<User> assignees = obj.getAssignes();
+                List<String> uuidStrings = new ArrayList<>();
+                if (assignees != null && !assignees.isEmpty()) {
+                    for (User user : assignees) {
+                        uuidStrings.add(user.getUuid());
                     }
-                    application.getWorkflow().setAssignes(uuidStrings);
+                }
+                application.getWorkflow().setAssignes(uuidStrings);
             }
         });
-
     }
+
+    public void updateStatusBasedOnWorkflowStatus(Workflow workflow) {
+        String workflowStatus = workflow.getWorkflowStatus();
+        if (workflowStatus.equals("APPLIED")) {
+            workflow.setStatus("INW");
+        } else if (workflowStatus.equals("REJECTED")) {
+            workflow.setStatus("INACTIVE");
+        } else {
+            workflow.setStatus("ACTIVE");
+        }
+    }
+
 
     public State callWorkFlow(ProcessInstanceRequest workflowReq) {
 

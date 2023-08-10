@@ -36,6 +36,9 @@ public class Workflow   {
         @JsonProperty("status")
         private String status = null;
 
+        @JsonProperty("workflowStatus")
+        private String workflowStatus = null;
+
         @JsonProperty("comments")
         private String comments = null;
 

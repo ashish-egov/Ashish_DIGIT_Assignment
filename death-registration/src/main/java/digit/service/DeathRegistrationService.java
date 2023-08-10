@@ -76,10 +76,11 @@ public class DeathRegistrationService {
         //WORKFLOW INTEGRATION
         applications.forEach(application -> {
             ProcessInstance obj=workflowService.getCurrentWorkflow(requestInfo, application.getTenantId(), application.getApplicationNumber());
-            application.setWorkflow(Workflow.builder().status(obj.getState().getState()).build());
+            application.setWorkflow(Workflow.builder().workflowStatus(obj.getState().getState()).build());
             application.getWorkflow().setComments(obj.getComment());
             application.getWorkflow().setAction(obj.getAction());
             application.getWorkflow().setDocuments(obj.getDocuments());
+            updateStatusBasedOnWorkflowStatus(application.getWorkflow());
             List<User> assignees = obj.getAssignes();
             List<String> uuidStrings = new ArrayList<>();
 
@@ -93,6 +94,17 @@ public class DeathRegistrationService {
 
         // Otherwise return the found applications
         return applications;
+    }
+
+    public void updateStatusBasedOnWorkflowStatus(Workflow workflow) {
+        String workflowStatus = workflow.getWorkflowStatus();
+        if (workflowStatus.equals("APPLIED")) {
+            workflow.setStatus("INW");
+        } else if (workflowStatus.equals("REJECTED")) {
+            workflow.setStatus("INACTIVE");
+        } else {
+            workflow.setStatus("ACTIVE");
+        }
     }
 
     public DeathRegistrationApplication updateDtApplication(DeathRegistrationRequest deathRegistrationRequest) {
