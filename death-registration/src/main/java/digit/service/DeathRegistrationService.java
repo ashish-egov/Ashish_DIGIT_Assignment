@@ -10,6 +10,7 @@ import digit.web.models.*;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.common.contract.request.RequestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -37,6 +38,12 @@ public class DeathRegistrationService {
     @Autowired
     private DeathRegistrationRepository deathRegistrationRepository;
 
+    @Value("${dtr.kafka.create.topic}")
+    private String createTopic;
+
+    @Value("${dtr.kafka.update.topic}")
+    private String updateTopic;
+
     @Autowired
     private Producer producer;
 
@@ -54,7 +61,7 @@ public class DeathRegistrationService {
         workflowService.updateWorkflowStatus(deathRegistrationRequest);
 
         // Push the application to the topic for persister to listen and persist
-        producer.push("save-dt-application", deathRegistrationRequest);
+        producer.push(createTopic, deathRegistrationRequest);
 
         // Return the response back to user
         return deathRegistrationRequest.getDeathRegistrationApplications();
@@ -125,7 +132,7 @@ public class DeathRegistrationService {
         workflowService.updateWorkflowStatus(deathRegistrationRequest);
 
         // Just like create request, update request will be handled asynchronously by the persisted
-        producer.push("update-dt-application", deathRegistrationRequest);
+        producer.push(updateTopic, deathRegistrationRequest);
 
         return deathRegistrationRequest.getDeathRegistrationApplications().get(0);
     }
