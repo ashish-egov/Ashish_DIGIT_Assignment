@@ -35,28 +35,37 @@ public class WorkflowService {
     public void updateWorkflowStatus(DeathRegistrationRequest deathRegistrationRequest) {
         deathRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
             if (application.getWorkflow() != null) {
-                ProcessInstance processInstance = getProcessInstanceForDTR(application, deathRegistrationRequest.getRequestInfo());
-                ProcessInstanceRequest workflowRequest = new ProcessInstanceRequest(deathRegistrationRequest.getRequestInfo(), Collections.singletonList(processInstance));
-                application.getWorkflow().setWorkflowStatus(callWorkFlow(workflowRequest).getState());
-                updateStatusBasedOnWorkflowStatus(application.getWorkflow());
+                updateWorkflowStatusFromProcessInstance(application, deathRegistrationRequest);
             } else {
-                ProcessInstance obj = workflowService.getCurrentWorkflow(deathRegistrationRequest.getRequestInfo(), application.getTenantId(), application.getApplicationNumber());
-                application.setWorkflow(Workflow.builder().workflowStatus(obj.getState().getState()).build());
-                application.getWorkflow().setComments(obj.getComment());
-                application.getWorkflow().setAction(obj.getAction());
-                application.getWorkflow().setDocuments(obj.getDocuments());
-                updateStatusBasedOnWorkflowStatus(application.getWorkflow());
-                List<User> assignees = obj.getAssignes();
-                List<String> uuidStrings = new ArrayList<>();
-                if (assignees != null && !assignees.isEmpty()) {
-                    for (User user : assignees) {
-                        uuidStrings.add(user.getUuid());
-                    }
-                }
-                application.getWorkflow().setAssignes(uuidStrings);
+                updateWorkflowStatusFromCurrentWorkflow(application, deathRegistrationRequest);
             }
         });
     }
+
+    private void updateWorkflowStatusFromProcessInstance(DeathRegistrationApplication application, DeathRegistrationRequest deathRegistrationRequest) {
+        ProcessInstance processInstance = getProcessInstanceForDTR(application, deathRegistrationRequest.getRequestInfo());
+        ProcessInstanceRequest workflowRequest = new ProcessInstanceRequest(deathRegistrationRequest.getRequestInfo(), Collections.singletonList(processInstance));
+        application.getWorkflow().setWorkflowStatus(callWorkFlow(workflowRequest).getState());
+        updateStatusBasedOnWorkflowStatus(application.getWorkflow());
+    }
+
+    private void updateWorkflowStatusFromCurrentWorkflow(DeathRegistrationApplication application, DeathRegistrationRequest deathRegistrationRequest) {
+        ProcessInstance obj = workflowService.getCurrentWorkflow(deathRegistrationRequest.getRequestInfo(), application.getTenantId(), application.getApplicationNumber());
+        application.setWorkflow(Workflow.builder().workflowStatus(obj.getState().getState()).build());
+        application.getWorkflow().setComments(obj.getComment());
+        application.getWorkflow().setAction(obj.getAction());
+        application.getWorkflow().setDocuments(obj.getDocuments());
+        updateStatusBasedOnWorkflowStatus(application.getWorkflow());
+        List<User> assignees = obj.getAssignes();
+        List<String> uuidStrings = new ArrayList<>();
+        if (assignees != null && !assignees.isEmpty()) {
+            for (User user : assignees) {
+                uuidStrings.add(user.getUuid());
+            }
+        }
+        application.getWorkflow().setAssignes(uuidStrings);
+    }
+
 
     public void updateStatusBasedOnWorkflowStatus(Workflow workflow) {
         String workflowStatus = workflow.getWorkflowStatus();
