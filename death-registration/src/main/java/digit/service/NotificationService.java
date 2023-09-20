@@ -29,23 +29,12 @@ public class NotificationService {
 
     public void prepareEventAndSend(DeathRegistrationRequest request){
         List<SMSRequest> smsRequestList = new ArrayList<>();
-//        request.getDeathRegistrationApplications().forEach(application -> {
-//            SMSRequest smsRequestForFather = SMSRequest.builder().mobileNumber(application.getFatherMobileNumber()).message(getCustomMessage(smsTemplate, application)).build();
-//            SMSRequest smsRequestForMother = SMSRequest.builder().mobileNumber(application.getMotherMobileNumber()).message(getCustomMessage(smsTemplate, application)).build();
-//            smsRequestList.add(smsRequestForFather);
-//            smsRequestList.add(smsRequestForMother);
-//        });
+
         for (SMSRequest smsRequest : smsRequestList) {
             producer.push(config.getSmsNotificationTopic(), smsRequest);
             log.info("Messages: " + smsRequest.getMessage());
         }
     }
 
-    private String getCustomMessage(String template, DeathRegistrationApplication application) {
-//        template = template.replace("{APPNUMBER}", application.getApplicationNumber());
-//        template = template.replace("{FATHER_NAME}", application.getFather().getName());
-//        template = template.replace("{MOTHER_NAME}", application.getMother().getName());
-        return template;
-    }
 
 }

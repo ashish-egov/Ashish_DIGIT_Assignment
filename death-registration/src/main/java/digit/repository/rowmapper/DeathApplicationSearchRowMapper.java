@@ -14,46 +14,54 @@ import java.util.Map;
 
 @Component
 public class DeathApplicationSearchRowMapper implements ResultSetExtractor<List<DeathRegistrationApplicationSearch>> {
-    public List<DeathRegistrationApplicationSearch> extractData(ResultSet rs) throws SQLException, DataAccessException {
-        Map<String,DeathRegistrationApplicationSearch> deathRegistrationApplicationMap = new LinkedHashMap<>();
 
-        while (rs.next()){
+    public List<DeathRegistrationApplicationSearch> extractData(ResultSet rs) throws SQLException, DataAccessException {
+        Map<String, DeathRegistrationApplicationSearch> deathRegistrationApplicationMap = new LinkedHashMap<>();
+
+        while (rs.next()) {
             String uuid = rs.getString("bapplicationnumber");
             DeathRegistrationApplicationSearch deathRegistrationApplication = deathRegistrationApplicationMap.get(uuid);
 
-            if(deathRegistrationApplication == null) {
-
-                Long lastModifiedTime = rs.getLong("blastModifiedTime");
-                if (rs.wasNull()) {
-                    lastModifiedTime = null;
-                }
-
-
-                AuditDetails auditdetails = AuditDetails.builder()
-                        .createdBy(rs.getString("bcreatedBy"))
-                        .createdTime(rs.getLong("bcreatedTime"))
-                        .lastModifiedBy(rs.getString("blastModifiedBy"))
-                        .lastModifiedTime(lastModifiedTime)
-                        .build();
-
-                deathRegistrationApplication = DeathRegistrationApplicationSearch.builder()
-                        .applicationNumber(rs.getString("bapplicationnumber"))
-                        .tenantId(rs.getString("dtenantid"))
-                        .id(rs.getString("bid"))
-                        .deceasedFirstName(rs.getString("bdeceasedfirstname"))
-                        .deceasedLastName(rs.getString("bdeceasedlastname"))
-                        .placeOfDeath(rs.getString("bplaceofdeath"))
-                        .timeOfDeath(rs.getInt("dtimeofdeath"))
-                        .applicantId(rs.getInt("dapplicantid"))
-                        .applicantUuid(rs.getString("dapplicantuuid"))
-                        .applicantType(rs.getString("dapplicanttype"))
-                        .auditDetails(auditdetails)
-                        .build();
+            if (deathRegistrationApplication == null) {
+                deathRegistrationApplication = createDeathRegistrationApplicationFromResultSet(rs);
             }
+
             addChildrenToProperty(rs, deathRegistrationApplication);
             deathRegistrationApplicationMap.put(uuid, deathRegistrationApplication);
         }
         return new ArrayList<>(deathRegistrationApplicationMap.values());
+    }
+
+    private DeathRegistrationApplicationSearch createDeathRegistrationApplicationFromResultSet(ResultSet rs) throws SQLException {
+        Long lastModifiedTime = rs.getLong("blastModifiedTime");
+        if (rs.wasNull()) {
+            lastModifiedTime = null;
+        }
+
+        AuditDetails auditDetails = createAuditDetailsFromResultSet(rs,lastModifiedTime);
+
+        return DeathRegistrationApplicationSearch.builder()
+                .applicationNumber(rs.getString("bapplicationnumber"))
+                .tenantId(rs.getString("dtenantid"))
+                .id(rs.getString("bid"))
+                .deceasedFirstName(rs.getString("bdeceasedfirstname"))
+                .deceasedLastName(rs.getString("bdeceasedlastname"))
+                .placeOfDeath(rs.getString("bplaceofdeath"))
+                .timeOfDeath(rs.getInt("dtimeofdeath"))
+                .applicantId(rs.getInt("dapplicantid"))
+                .applicantUuid(rs.getString("dapplicantuuid"))
+                .applicantType(rs.getString("dapplicanttype"))
+                .auditDetails(auditDetails)
+                .build();
+    }
+
+    private AuditDetails createAuditDetailsFromResultSet(ResultSet rs,Long lastModifiedTime) throws SQLException {
+        return AuditDetails.builder()
+                .createdBy(rs.getString("bcreatedBy"))
+                .createdTime(rs.getLong("bcreatedTime"))
+                .lastModifiedBy(rs.getString("blastModifiedBy"))
+                .lastModifiedTime(lastModifiedTime)
+                .build();
     }
 
     private void addChildrenToProperty(ResultSet rs, DeathRegistrationApplicationSearch deathRegistrationApplication)

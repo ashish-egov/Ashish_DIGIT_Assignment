@@ -73,7 +73,16 @@ public class DeathApplicationEnrichment {
         applicant.setTenantId(user.getTenantId());
         applicant.setType(user.getType());
 
-        // Copy roles only if present in User and Applicant classes
+        // Copy roles from User to Applicant
+        copyRoles(user, applicant);
+
+        // Additional fields in the Applicant class that are not present in the User class
+        // will be ignored (since they are not set).
+
+        return applicant;
+    }
+
+    private void copyRoles(User user, Applicant applicant) {
         if (user.getRoles() != null && !user.getRoles().isEmpty()) {
             List<Role> rolesToCopy = new ArrayList<>();
             for (Role userRole : user.getRoles()) {
@@ -85,11 +94,7 @@ public class DeathApplicationEnrichment {
             }
             applicant.setRoles(rolesToCopy);
         }
-
-        // Additional fields in the Applicant class that are not present in the User class
-        // will be ignored (since they are not set).
-
-        return applicant;
     }
+
 
 }

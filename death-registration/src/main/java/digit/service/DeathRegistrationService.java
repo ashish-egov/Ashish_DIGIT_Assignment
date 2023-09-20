@@ -65,36 +65,45 @@ public class DeathRegistrationService {
         List<DeathRegistrationApplicationSearch> applications = deathRegistrationRepository.getApplicationsSearch(deathApplicationSearchCriteria);
 
         // If no applications are found matching the given criteria, return an empty list
-        if(CollectionUtils.isEmpty(applications))
+        if (CollectionUtils.isEmpty(applications)) {
             return new ArrayList<>();
+        }
 
         // Enrich mother and father of applicant objects
         applications.forEach(application -> {
-            enrichmentUtil.enrichApplicantOnSearch(application,deathApplicationSearchCriteria);
+            enrichmentUtil.enrichApplicantOnSearch(application, deathApplicationSearchCriteria);
         });
 
         //WORKFLOW INTEGRATION
         applications.forEach(application -> {
-            ProcessInstance obj=workflowService.getCurrentWorkflow(requestInfo, application.getTenantId(), application.getApplicationNumber());
-            application.setWorkflow(Workflow.builder().workflowStatus(obj.getState().getState()).build());
-            application.getWorkflow().setComments(obj.getComment());
-            application.getWorkflow().setAction(obj.getAction());
-            application.getWorkflow().setDocuments(obj.getDocuments());
-            updateStatusBasedOnWorkflowStatus(application.getWorkflow());
-            List<User> assignees = obj.getAssignes();
-            List<String> uuidStrings = new ArrayList<>();
-
-            if (assignees != null && !assignees.isEmpty()) {
-                for (User user : assignees) {
-                    uuidStrings.add(user.getUuid());
-                }
-            }
-            application.getWorkflow().setAssignes(uuidStrings);
+            updateWorkflowData(requestInfo, application);
         });
 
         // Otherwise return the found applications
         return applications;
     }
+
+    private void updateWorkflowData(RequestInfo requestInfo, DeathRegistrationApplicationSearch application) {
+        ProcessInstance obj = workflowService.getCurrentWorkflow(requestInfo, application.getTenantId(), application.getApplicationNumber());
+        application.setWorkflow(Workflow.builder().workflowStatus(obj.getState().getState()).build());
+        application.getWorkflow().setComments(obj.getComment());
+        application.getWorkflow().setAction(obj.getAction());
+        application.getWorkflow().setDocuments(obj.getDocuments());
+        updateStatusBasedOnWorkflowStatus(application.getWorkflow());
+
+        List<User> assignees = obj.getAssignes();
+        List<String> uuidStrings = new ArrayList<>();
+
+        if (assignees != null && !assignees.isEmpty()) {
+            for (User user : assignees) {
+                uuidStrings.add(user.getUuid());
+            }
+        }
+
+        application.getWorkflow().setAssignes(uuidStrings);
+    }
+
+
 
     public void updateStatusBasedOnWorkflowStatus(Workflow workflow) {
         String workflowStatus = workflow.getWorkflowStatus();
@@ -110,13 +119,12 @@ public class DeathRegistrationService {
     public DeathRegistrationApplication updateDtApplication(DeathRegistrationRequest deathRegistrationRequest) {
         // Validate whether the application that is being requested for update indeed exists
         DeathRegistrationApplication existingApplication = validator.validateApplicationExistence(deathRegistrationRequest.getDeathRegistrationApplications().get(0));
-
         // Enrich application upon update
         enrichmentUtil.enrichDeathApplicationUponUpdate(deathRegistrationRequest);
 
         workflowService.updateWorkflowStatus(deathRegistrationRequest);
 
-        // Just like create request, update request will be handled asynchronously by the persister
+        // Just like create request, update request will be handled asynchronously by the persisted
         producer.push("update-dt-application", deathRegistrationRequest);
 
         return deathRegistrationRequest.getDeathRegistrationApplications().get(0);
